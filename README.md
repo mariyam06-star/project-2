@@ -1,4 +1,3 @@
-DevSecOps – Automated Application Security Pipeline A DevSecOps automated application security pipeline integrates security practices directly into your CI/CD workflow so that security is continuous, automated, and built into every stage of software delivery. 
 
 ✅ Project 1 Workflow Diagram
 

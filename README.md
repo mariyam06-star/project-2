@@ -1,106 +1,133 @@
+📌 DevSecOps – Week 1 & Week 2 Implementation (SAST)
+🔷 Project Overview
 
-✅ Project 1 Workflow Diagram
+This project demonstrates the implementation of DevSecOps principles by integrating Static Application Security Testing (SAST) into the development lifecycle using SonarQube.
 
-Here is the full workflow:
-Developer writes code
-        │
-        ▼
-   git commit command
-        │
-        ▼
- ┌─────────────────────┐
- │  Pre-commit Hook    │
- │  (Security Gate)    │
- └─────────────────────┘
-        │
-        ▼
-  TruffleHog Scanner
-        │
-   ┌────┴────┐
-   │         │
-   ▼         ▼
-No secret   Secret found
-found       detected
-   │         │
-   ▼         ▼
-Commit      ❌ Commit
-allowed      BLOCKED
-   │
-   ▼
-Code saved safely
-to repository
-✅ Step-by-step explanation (simple)
-🔵 Step 1 — Developer writes code
+The objective was to:
 
-You create or edit files in your project.
+Develop a simple Python application
 
-Example:
+Intentionally inject a security vulnerability
 
-secret.txt
-app.py
+Detect it using automated static code analysis
 
-🔵 Step 2 — You run git commit
+Enforce security through Quality Gates
 
-When you try to save your code:
+Fix the vulnerability
 
-git commit -m "update"
+Re-validate secure code
 
+🗓 Week 1 – Setup & Vulnerability Detection
+✅ 1. Environment Setup
 
-👉 Git does not save immediately
+Installed and configured Docker
 
-It first checks the security hook.👉 Git does not save immediately
+Deployed SonarQube using Docker container
 
-It first checks the security hook.
+Configured Sonar Scanner
 
-🔵 Step 3 — Pre-commit hook runs
+Generated authentication token
 
-This is your security checkpoint.
+✅ 2. Application Development
 
-Think of it like:
+Created a simple Python login system using SQLite database.
 
-👉 Airport security scanner ✈️
+❌ 3. Injected SQL Injection Vulnerability
 
-It stops your code and sends it to TruffleHog.
+Introduced a vulnerable query using string concatenation:
 
-🔵 Step 4 — TruffleHog scans files
+query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'"
+cursor.execute(query)
 
-TruffleHog searches for:
-👉 Git does not save immediately
+This allowed SQL Injection attacks.
+🔍 4. Static Code Analysis (SAST)
 
-It first checks the security hook.
-✅ passwords
-✅ API keys
-✅ AWS secrets
-✅ tokens
+Executed sonar-scanner
 
-🔵 Step 5 — Decision point
-Case A: No secret found ✅
+SonarQube detected:
 
-👉 Commit is allowed
-👉 Code is saved normally
+SQL Injection vulnerability
 
-Case B: Secret found ❌
+Security Rating downgraded
 
-👉 Commit is blocked
-👉 Warning message appears
+Vulnerability count increased
 
-Secret detected! Commit blocked.
+This demonstrated successful automated vulnerability detection.
 
+🗓 Week 2 – Security Fix & Quality Gate Enforcement
+🔒 1. Vulnerability Remediation
 
-This protects your repository.
-✅ Simple real-life analogy
+Replaced unsafe query with parameterized query:
 
-Think of your project like:
+query = "SELECT * FROM users WHERE username = ? AND password = ?"
+cursor.execute(query, (username, password))
 
-👉 A metal detector at airport security
+This prevents SQL Injection by separating code from user input.
+🚨 2. Quality Gate Configuration
 
-If you carry nothing dangerous:
+Configured SonarQube Quality Gate policy:
 
-👉 You pass through
+Condition: Vulnerabilities > 0 → FAIL
 
-If you carry something dangerous:
+This ensures insecure code cannot pass the pipeline.
 
-👉 Alarm rings 🚨
-👉 You are stopped
+🔁 3. Demonstration of Security Enforcement
+Step A – Re-injected vulnerability
 
-👉 Your system automatically scans code for secrets before saving it and blocks unsafe commits.
+Result:
+
+Quality Gate FAILED
+
+Security issue detected
+
+Step B – Fixed vulnerability
+
+Result:
+
+Vulnerabilities: 0
+
+Security Rating: A
+
+Quality Gate PASSED
+
+This demonstrates automated security validation in a DevSecOps workflow.
+
+🔄 DevSecOps Workflow Implemented
+Code Development
+↓
+Vulnerability Injection
+↓
+SAST Scan (SonarQube)
+↓
+Quality Gate Decision
+↓
+Fix & Re-Scan
+↓
+Secure Approval
+
+🎯 Key Outcomes
+
+Implemented Static Application Security Testing (SAST)
+
+Demonstrated SQL Injection detection
+
+Configured automated Quality Gate enforcement
+
+Applied secure coding best practices
+
+Validated remediation through re-scanning
+🛠 Tools Used
+
+SonarQube
+
+Docker
+
+Python
+
+SQLite
+
+Sonar Scanner
+
+📌 Conclusion
+
+This two-week implementation successfully demonstrates how DevSecOps integrates security into the development lifecycle by detecting vulnerabilities early, blocking insecure builds, and ensuring only secure code progresses forward.

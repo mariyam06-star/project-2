@@ -18,12 +18,15 @@ jobs:
     - name: Run Application Container
       run: docker run -d -p 5050:5050 --name mycontainer myapp
 
-    - name: Run ZAP Baseline Scan
-      run: |
-       docker run --network="host" \
-       ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-       -t http://localhost:5050 \
-       -r zap-report.html \
+    -  name: Run ZAP Baseline Scan
+       run: |
+        docker network create zapnet
+        docker network connect zapnet mycontainer
+
+        docker run --rm --network zapnet \
+        ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+        -t http://mycontainer:5050 \
+        -r zap-report.html \
         -I
 
     - name: Security Gate - Fail on High Risk

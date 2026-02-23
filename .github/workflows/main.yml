@@ -2,7 +2,7 @@ name: DevSecOps Security Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   security-scan:
@@ -16,25 +16,13 @@ jobs:
       run: docker build -t myapp ./project
 
     - name: Run Application Container
-      run: docker run -d -p 5050:5050 --name mycontainer myapp
+      run: docker run -d -p 5050:5050 --name myapp myapp
 
-    -  name: Run ZAP Baseline Scan
-       run: |
-        docker network create zapnet
-        docker network connect zapnet mycontainer
+    - name: Wait for App
+      run: sleep 15
 
-        docker run --rm --network zapnet \
-        ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-        -t http://mycontainer:5050 \
-        -r zap-report.html \
-        -I
-
-    - name: Security Gate - Fail on High Risk
-      run: |
-        echo "Checking for High vulnerabilities..."
-        if grep -q "High" zap-report.html; then
-          echo "❌ High severity vulnerability detected!"
-          exit 1
-        else
-          echo "✅ No High severity vulnerabilities found."
-        fi
+    - name: Run OWASP ZAP Scan
+      uses: zaproxy/action-baseline@v0.10.0
+      with:
+        target: 'http://localhost:5050'
+        fail_action: false

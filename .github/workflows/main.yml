@@ -24,6 +24,7 @@ jobs:
         ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
         -t http://localhost:5050 \
         -r zap-report.html
+           -I
 
     - name: Security Gate - Fail on High Risk
       run: |

@@ -1,10 +1,10 @@
- name: DevSecOps Security Pipeline
+name: DevSecOps Security Pipeline
 
- on:
+on:
   push:
     branches: [ main ]
 
- jobs:
+jobs:
   security:
     runs-on: ubuntu-latest
 
@@ -12,18 +12,20 @@
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Install Flask
+        run: pip install flask
+
       - name: Start Flask App
         run: |
-          pip install flask
-          python app.py &
-          sleep 10
+          nohup python app.py &
+          sleep 15
 
       - name: Run ZAP Baseline Scan
         run: |
           docker run --rm \
-            -v $(pwd):/zap/wrk \
+            --network="host" \
             owasp/zap2docker-stable \
-            zap-baseline.py -t http://host.docker.internal:5050 -r zap-report.html
+            zap-baseline.py -t http://localhost:5050 -r zap-report.html
 
       - name: Security Gate
         run: |

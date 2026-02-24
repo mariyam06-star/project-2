@@ -21,8 +21,9 @@ jobs:
     - name: Wait for App
       run: sleep 15
 
-    - name: Run OWASP ZAP Scan
-      uses: zaproxy/action-baseline@v0.10.0
-      with:
-        target: 'http://localhost:5050'
-        fail_action: false
+    - name: Run ZAP Scan
+      run: |
+       docker run --rm \
+       -v $(pwd):/zap/wrk \
+       owasp/zap2docker-stable \
+       zap-baseline.py -t http://localhost:5050 -J zap-report.json

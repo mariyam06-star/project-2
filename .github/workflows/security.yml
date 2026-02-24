@@ -1,9 +1,35 @@
- - name: Security Gate - Fail on High or Medium
-  run: |
-    echo "Checking for High and Medium vulnerabilities..."
-    if grep -E "High|Medium" zap-report.html; then
-      echo "❌ High or Medium vulnerability detected!"
-      exit 1
-    else
-      echo "✅ No High or Medium vulnerabilities found."
-    fi
+ name: DevSecOps Security Pipeline
+
+ on:
+  push:
+    branches: [ main ]
+
+ jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Start Flask App
+        run: |
+          pip install flask
+          python app.py &
+          sleep 10
+
+      - name: Run ZAP Baseline Scan
+        run: |
+          docker run --rm \
+            -v $(pwd):/zap/wrk \
+            owasp/zap2docker-stable \
+            zap-baseline.py -t http://host.docker.internal:5050 -r zap-report.html
+
+      - name: Security Gate
+        run: |
+          if grep -E "High|Medium" zap-report.html; then
+            echo "❌ Vulnerabilities found!"
+            exit 1
+          else
+            echo "✅ Secure build"
+          fi

@@ -1,0 +1,9 @@
+ - name: Security Gate - Fail on High or Medium
+  run: |
+    echo "Checking for High and Medium vulnerabilities..."
+    if grep -E "High|Medium" zap-report.html; then
+      echo "❌ High or Medium vulnerability detected!"
+      exit 1
+    else
+      echo "✅ No High or Medium vulnerabilities found."
+    fi

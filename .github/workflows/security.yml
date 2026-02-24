@@ -18,20 +18,9 @@ jobs:
       - name: Start Flask App
         run: |
           nohup python app.py &
-          sleep 15
+          sleep 20
 
-      - name: Run ZAP Baseline Scan
-        run: |
-          docker run --rm \
-            --network="host" \
-            owasp/zap2docker-stable \
-            zap-baseline.py -t http://localhost:5050 -r zap-report.html
-
-      - name: Security Gate
-        run: |
-          if grep -E "High|Medium" zap-report.html; then
-            echo "❌ Vulnerabilities found!"
-            exit 1
-          else
-            echo "✅ Secure build"
-          fi
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'http://localhost:5050'

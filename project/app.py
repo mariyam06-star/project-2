@@ -5,7 +5,7 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     name = request.args.get("name", "Guest")
-    return render_template_string("<h1>Hello {{ name }}</h1>", name=name)
+    return f"<h1>Hello {name}</h1>"
 
 @app.after_request
 def set_security_headers(response):

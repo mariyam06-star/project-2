@@ -1,133 +1,171 @@
-📌 DevSecOps – Week 1 & Week 2 Implementation (SAST)
-🔷 Project Overview
+📘 DevSecOps Project Report
+👩‍💻 Name: Mariyam Sidat
+🏢 Company: Infotect Solution
+📂 Project Title: Secure Flask Application with DevSecOps CI/CD Pipeline
+🛠 Technologies Used: Python, Flask, GitHub Actions, OWASP ZAP
+Duration: 4 Weeks
 
-This project demonstrates the implementation of DevSecOps principles by integrating Static Application Security Testing (SAST) into the development lifecycle using SonarQube.
+WEEK 1 – Project Setup & Environment Configuration
 
-The objective was to:
+🎯 Objective
+To understand DevOps fundamentals and set up the development environment for building a secure web application.
 
-Develop a simple Python application
+🛠 Work Completed
+Installed Python and required dependencies
+Installed Flask framework
+Created basic project structure
+Initialized Git repository
+Created GitHub repository
+Pushed initial project code to GitHub
 
-Intentionally inject a security vulnerability
+📂 Project Structure
+project-2/
+│
+├── app.py
+└── README.md
 
-Detect it using automated static code analysis
+📚 Learning Outcomes
+Basics of DevOps lifecycle
+Git & GitHub version control
+Python virtual environment setup
+Project structuring best practices
 
-Enforce security through Quality Gates
+WEEK 2 – Application Development & Basic Security
 
-Fix the vulnerability
+🎯 Objective
+To develop a working Flask application and understand common web vulnerabilities.
 
-Re-validate secure code
+🛠 Work Completed
+Developed a simple Flask web application
+Implemented dynamic routing with query parameters
+Tested application locally
+Studied common web vulnerabilities:
+SQL Injection
+Cross-Site Scripting (XSS)
+Clickjacking
 
-🗓 Week 1 – Setup & Vulnerability Detection
-✅ 1. Environment Setup
+💻 Sample Application Code
+from flask import Flask, request
+app = Flask(__name__)
+@app.route("/")
+def home():
+    name = request.args.get("name", "Guest")
+    return f"<h1>Hello {name}</h1>"
+ if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
 
-Installed and configured Docker
+    🔐 SQL Injection Understanding
+SQL Injection occurs when user input is directly inserted into SQL queries without validation.
 
-Deployed SonarQube using Docker container
+Example of vulnerable query:
+SELECT * FROM users WHERE username = 'admin' OR '1'='1';
 
-Configured Sonar Scanner
+Impact:
+Unauthorized data access
+Data leakage
+Authentication bypass
 
-Generated authentication token
+📚 Learning Outcomes
+Web application fundamentals
+Security vulnerability awareness
+Importance of input validation
+Secure coding basics
 
-✅ 2. Application Development
+WEEK 3 – CI Pipeline Implementation (DevOps)
 
-Created a simple Python login system using SQLite database.
+🎯 Objective
+To implement Continuous Integration using GitHub Actions.
 
-❌ 3. Injected SQL Injection Vulnerability
+🛠 Work Completed
+Created GitHub Actions workflow
+Automated dependency installation
+Automated application startup
+Triggered workflow on push events
+Debugged YAML configuration errors
 
-Introduced a vulnerable query using string concatenation:
+📄 Workflow File Location :
+.github/workflows/security.yml
 
-query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'"
-cursor.execute(query)
+ ⚙ CI Workflow Example :
+ name: DevSecOps Security Pipeline
+ on:
+  push:
+    branches: [ main ]
+  jobs:
+   security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install flask
+      - run: nohup python app.py &
 
-This allowed SQL Injection attacks.
-🔍 4. Static Code Analysis (SAST)
+🚀 Achievements
+  Automatic pipeline execution on every push
+  Hands-on experience with YAML configuration
+  Understood CI automation process
 
-Executed sonar-scanner
+📚 Learning Outcomes
+Continuous Integration (CI)
+GitHub Actions
+Workflow debugging
+Build automation
 
-SonarQube detected:
+WEEK 4 – DevSecOps & Security Automation
 
-SQL Injection vulnerability
+🎯 Objective
+To integrate security into the CI pipeline (DevSecOps approach).
 
-Security Rating downgraded
+🛠 Work Completed
+Added security headers to Flask application
+Integrated OWASP ZAP for automated DAST scanning
+Removed deprecated Docker-based scanning
+Resolved pipeline conflicts
+Achieved successful green security pipeline
 
-Vulnerability count increased
+🔐 Security Headers Implemented :
+@app.after_request
+def set_security_headers(response):
+    response.headers['Content-Security-Policy'] = "default-src 'self'"
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains'
+    return response
 
-This demonstrated successful automated vulnerability detection.
+Security Improvements:
+ Prevents XSS attacks
+ Prevents MIME-type sniffing
+ Prevents Clickjacking
+ Enforces HTTPS policy
 
-🗓 Week 2 – Security Fix & Quality Gate Enforcement
-🔒 1. Vulnerability Remediation
+🔎 DAST Implementation
+Used OWASP ZAP GitHub Action:
+- name: OWASP ZAP Baseline Scan
+  uses: zaproxy/action-baseline@v0.10.0
+  with:
+    target: 'http://localhost:5000'
+    fail_action: false
 
-Replaced unsafe query with parameterized query:
+  🚨 Issues Faced & Solutions
+        Issue	                              Solution
+     Exit code 125	                     Removed outdated Docker image
+     Port mismatch	                     Corrected to port 5000
+     Multiple workflow files             Deleted duplicate main.yml
+     Pipeline failure                    Simplified workflow
 
-query = "SELECT * FROM users WHERE username = ? AND password = ?"
-cursor.execute(query, (username, password))
+🏆 Final Outcome
+✅ Fully automated CI/CD pipeline
+✅ Security scanning integrated
+✅ Secure Flask application
+✅ Successful DevSecOps implementation
+✅ Green GitHub Actions pipeline
 
-This prevents SQL Injection by separating code from user input.
-🚨 2. Quality Gate Configuration
+🎯 Conclusion
 
-Configured SonarQube Quality Gate policy:
+This project demonstrates the successful implementation of DevOps and DevSecOps practices in a real-world development environment, 
+By integrating automated security testing within the CI pipeline, vulnerabilities can be detected early, ensuring secure and reliable software delivery.
 
-Condition: Vulnerabilities > 0 → FAIL
-
-This ensures insecure code cannot pass the pipeline.
-
-🔁 3. Demonstration of Security Enforcement
-Step A – Re-injected vulnerability
-
-Result:
-
-Quality Gate FAILED
-
-Security issue detected
-
-Step B – Fixed vulnerability
-
-Result:
-
-Vulnerabilities: 0
-
-Security Rating: A
-
-Quality Gate PASSED
-
-This demonstrates automated security validation in a DevSecOps workflow.
-
-🔄 DevSecOps Workflow Implemented
-Code Development
-↓
-Vulnerability Injection
-↓
-SAST Scan (SonarQube)
-↓
-Quality Gate Decision
-↓
-Fix & Re-Scan
-↓
-Secure Approval
-
-🎯 Key Outcomes
-
-Implemented Static Application Security Testing (SAST)
-
-Demonstrated SQL Injection detection
-
-Configured automated Quality Gate enforcement
-
-Applied secure coding best practices
-
-Validated remediation through re-scanning
-🛠 Tools Used
-
-SonarQube
-
-Docker
-
-Python
-
-SQLite
-
-Sonar Scanner
-
-📌 Conclusion
-
-This two-week implementation successfully demonstrates how DevSecOps integrates security into the development lifecycle by detecting vulnerabilities early, blocking insecure builds, and ensuring only secure code progresses forward.
+The project reflects practical understanding of:
+Continuous Integration
+Security Automation
+Web Application Security
+Secure Development Lifecycle
